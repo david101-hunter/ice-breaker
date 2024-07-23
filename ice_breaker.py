@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import os
 from langchain.prompts.prompt import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 
 # from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
@@ -30,7 +31,10 @@ if __name__ == "__main__":
     )
     llm = ChatOllama(temperature=0, model="gemma:2b")
     chain = summary_prompt_template | llm
-    res = chain.invoke(input={"information": information})
-
+    res = chain.invoke(input={"information": information})  # ai message object
     print(res)
+    print("================================================")
+    chain2 = summary_prompt_template | llm | StrOutputParser()
+    res2 = chain2.invoke(input={"information": information})  # content of message
+    print(res2)
 
