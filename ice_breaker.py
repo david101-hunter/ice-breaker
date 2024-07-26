@@ -37,4 +37,3 @@ if __name__ == "__main__":
     chain2 = summary_prompt_template | llm | StrOutputParser()
     res2 = chain2.invoke(input={"information": information})  # content of message
     print(res2)
-
