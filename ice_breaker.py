@@ -2,9 +2,36 @@ from dotenv import load_dotenv
 import os
 from langchain.prompts.prompt import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.messages import HumanMessage
 
 # from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
+from agents.linkedin_lookup_agent import lookup as linkedin_lookup_agent
+from third_parties.linkedin import scrape_linkedin_profile
+
+
+def ice_break_with(name: str) -> str:
+    linkin_username = linkedin_lookup_agent(name)
+    linkin_data = scrape_linkedin_profile(linkedin_profile_url=linkin_username)
+
+    summary_template = """
+        given the information {information} about a person from I want you to create
+        1. a short summary
+        2. two interesting facts about them
+    """
+
+    # create a prompt template from PromptTemplate constructor
+    summary_prompt_template = PromptTemplate(
+        input_variable="information", template=summary_template
+    )
+
+    llm = ChatOllama(temperature=0, model="gemma:2b")
+
+    chain = summary_prompt_template | llm
+    res = chain.invoke(input={"information": linkin_data})  # ai message object
+    print(res)
+
 
 information = """
 Elon Reeve Musk FRS (/ˈiːlɒn/; born June 28, 1971) is a businessman and investor known for his key roles in space company SpaceX and automotive company Tesla, Inc. Other involvements include ownership of X Corp., formerly Twitter, and his role in the founding of The Boring Company, xAI, Neuralink and OpenAI. He is one of the wealthiest people in the world; as of July 2024, Forbes estimates his net worth to be US$221 billion.[4]
@@ -16,16 +43,17 @@ In 2004, Musk was an early investor who provided most of the initial financing i
 Musk has expressed views that have made him a polarizing figure.[5] He has been criticized for making unscientific and misleading statements, including COVID-19 misinformation, promoting right-wing conspiracy theories, and "endorsing an antisemitic theory",[6] the latter of which he later apologized for.[5][7] His ownership of Twitter has been similarly controversial, being marked by layoffs of large numbers of employees, an increase in hate speech, misinformation and disinformation posts on the website, and changes to Twitter Blue verification.
 """
 
-if __name__ == "__main__":
-    load_dotenv()
-    print("Hello LangChain!")
+summary_template = """
+    given the information {information} about a person from I want you to create
+    1. a short summary
+    2. two interesting facts about them
+"""
 
-    summary_template = """
-        given the information {information} about a person from I want you to create
-        1. a short summary
-        2. two interesting facts about them
-    """
+#  các loại String PromptTemplates
 
+
+def example():
+    # create a prompt template from PromptTemplate constructor
     summary_prompt_template = PromptTemplate(
         input_variable="information", template=summary_template
     )
@@ -37,3 +65,64 @@ if __name__ == "__main__":
     chain2 = summary_prompt_template | llm | StrOutputParser()
     res2 = chain2.invoke(input={"information": information})  # content of message
     print(res2)
+
+
+def example2():
+    """
+        String PromptTemplates
+    :return:
+    """
+    # create a prompt template from from_template method
+    prompt_template = PromptTemplate.from_template("Tell me a joke about {topic} in {place}")
+    # pass values to the prompt template
+    res = prompt_template.invoke({"topic": "cats", "place": "the kitchen"})
+    return res.text
+
+
+def example3():
+    """
+        ChatPromptTemplate
+    :return:
+    """
+    prompt_template = ChatPromptTemplate.from_messages([
+        ("system", "You are a helpful assistant"),
+        ("user", "Tell me a joke about {topic} in {place} at {time}"),
+    ])
+    res = prompt_template.invoke({"topic": "cats", "place": "the kitchen", "time": "night"})
+    return res.messages
+
+
+def example4():
+    """
+        ChatPromptTemplate
+    :return:
+    """
+    prompt_template = ChatPromptTemplate.from_messages([
+        ("system", "You are a helpful assistant"),
+        MessagesPlaceholder("msgs")
+    ])
+
+    res = prompt_template.invoke({"msgs": [HumanMessage(content="hi!")]})
+    return res
+
+
+if __name__ == "__main__":
+    load_dotenv()
+    # print("Hello LangChain!")
+    # print("================================================")
+    # print(example2())
+    # print("================================================")
+    # print(example3())
+    # print("================================================")
+    # print(example4())
+    # # An alternative way to accomplish the same thing without using the MessagesPlaceholder class explicitly is:
+    # prompt_template = ChatPromptTemplate.from_messages([
+    #     ("system", "You are a helpful assistant"),
+    #     ("placeholder", "{msgs}")  # <-- This is the changed part
+    # ])
+    # res = prompt_template.invoke({"msgs": [HumanMessage(content="hi!")]})
+    # print(res)
+
+    print("Ice Breaker Enter:")
+    ice_break_with(name="David Do Viettel Digital")
+

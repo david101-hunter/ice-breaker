@@ -6,6 +6,7 @@ import os
 import requests  # requests api from LinkedIn
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 
@@ -24,19 +25,7 @@ def scrape_linkedin_profile(linkedin_profile_url: str, mock: bool = False):
         headers = {"Authorization": "Bearer " + api_key}
         api_endpoint = "https://nubela.co/proxycurl/api/v2/linkedin"
         params = {
-            # "twitter_profile_url": "https://x.com/johnrmarty/",
-            # "facebook_profile_url": "https://facebook.com/johnrmarty/",
-            "linkedin_profile_url": linkedin_profile_url,
-            "extra": "include",
-            "github_profile_id": "include",
-            "facebook_profile_id": "include",
-            "twitter_profile_id": "include",
-            "personal_contact_number": "include",
-            "personal_email": "include",
-            "inferred_salary": "include",
-            "skills": "include",
-            "use_cache": "if-present",
-            "fallback_to_cache": "on-error",
+            "linkedin_profile_url": "https://www.linkedin.com/in/johnrmarty/",
         }
         response = requests.get(api_endpoint, params=params, headers=headers)
     data = response.json()
@@ -48,6 +37,8 @@ if __name__ == "__main__":
     print(
         scrape_linkedin_profile(
             linkedin_profile_url="https://www.linkedin.com/in/johnrmarty/",
-            mock=False,
+            mock=True,
         )
     )
+
+
