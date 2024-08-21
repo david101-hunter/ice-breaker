@@ -1,5 +1,3 @@
-LangChain Course
-
 Agent was created at `./agents/linkedin_lookup_agent.py`
 - the result may vary after each run, sometimes you'll get other result of other David Do because there are bunch of people with that name
 - we need to make this query less ambiguous and more concise (add information to lookup function) - out of scope of this course
