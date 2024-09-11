@@ -9,3 +9,6 @@ black==24.4.2 # code formatter
 python-dotenv==1.0.1 # load environment variables from .env file
 requests
 tweepy # get tweets from twitter
+pydantic==2.8.2
+
+langsmith==0.1.117 # tracing and debugging tool for langchain
